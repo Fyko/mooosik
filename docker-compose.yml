@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  bot:
+    build:
+      context: .
+    restart: unless-stopped
+    env_file:
+      - ./.env
+
+  lavalink:
+    image: fredboat/lavalink:master
+    environment:
+      - SERVER_PORT=7000 
+      - SERVER_ADDRESS=0.0.0.0 
+      - LAVALINK_SERVER_PASSWORD=doctordoctor
+      - LAVALINK_SERVER_SOURCES_YOUTUBE=true 
+      - LAVALINK_SERVER_SOURCES_BANDCAMP=true 
+      - LAVALINK_SERVER_SOURCES_SOUNDCLOUD=true 
+      - LAVALINK_SERVER_SOURCES_TWITCH=true 
+      - LAVALINK_SERVER_SOURCES_VIMEO=true 
+      - LAVALINK_SERVER_SOURCES_MIXER=true 
+      - LAVALINK_SERVER_SOURCES_HTTP=true 
+      - LAVALINK_SERVER_SOURCES_LOCAL=false 
+      - LAVALINK_SERVER_BUFFER_DURATION_MS=400 
+      - LAVALINK_SERVER_YOUTUBE_PLAYLIST_LOAD_LIMIT=600 
+      # - METRICS_PROMETHEUS_ENABLED=true 
+      # - METRICS_PROMETHEUS_ENDPOINT=/metrics
+      - LOGGING_LEVEL_LAVALINK=DEBUG
+    ports:
+      - 7000:7000
+
+  postgres:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: fyko
+      POSTGRES_PASSWORD: doctordoctor
+      POSTGRES_DB: mooosik
+    ports:
+      - 5432:5432
+
+volumes:
+  postgres_data:
+  redis_data:

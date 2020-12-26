@@ -1,0 +1,40 @@
+import { Command, Constants, Listener } from 'discord-akairo';
+import { Message, TextChannel } from 'discord.js';
+
+export interface Text {
+	[key: string]: string;
+}
+
+export default class CommandBlockedListener extends Listener {
+	public constructor() {
+		super('commandBlocked', {
+			category: 'commandHandler',
+			event: Constants.CommandHandlerEvents.COMMAND_BLOCKED,
+			emitter: 'commandHandler',
+		});
+	}
+
+	public exec(msg: Message, command: Command, reason: string): void {
+		if (reason === 'sendMessages') return;
+
+		const text: Text = {
+			owner: 'You must be an approved bot administrator to use this command.',
+			guild: 'You must be in a server to use this command.',
+			dm: 'This command must be ran in DMs.',
+		};
+
+		const location = msg.guild ? msg.guild.name : msg.author.tag;
+		this.client.logger.info(`[COMMANDS BLOCKED] ${command.id} with reason ${reason} in ${location}`);
+
+		const res = text[reason];
+		if (!res) return;
+
+		if (
+			msg.guild
+				? msg.channel instanceof TextChannel && msg.channel.permissionsFor(this.client.user!)!.has('SEND_MESSAGES')
+				: true
+		) {
+			void msg.util?.reply(res);
+		}
+	}
+}
