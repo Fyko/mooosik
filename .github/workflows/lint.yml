@@ -13,11 +13,8 @@ jobs:
         with:
           node-version: 12
 
-      - name: Install pnpm
-        run: curl -L https://unpkg.com/@pnpm/self-installer | node
-
       - name: Install dependencies
-        run: pnpm install
+        run: yarn
 
       - name: Run Lint
-        run: pnpm run lint
+        run: yarn lint
